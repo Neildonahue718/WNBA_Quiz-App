@@ -7,11 +7,11 @@ import time
 @st.cache_data
 def load_data():
     try:
-        df = pd.read_csv('wnba_players.csv')
+        df = pd.read_csv('https://docs.google.com/spreadsheets/d/1C7cWDVRnCQVLRVquKoSN4dakCNZQtL5DqY4tPx6cC1Y/edit?pli=1&gid=1613698693#gid=1613698693')
         df = df[['Player', 'Team', 'Age', 'Ht', 'Exp', 'College', 'Pos', 'Draft Pick']].dropna().drop_duplicates()
         return df
     except FileNotFoundError:
-        st.error("Error: 'wnba_players.csv' not found.")
+        st.error("Error: 'https://docs.google.com/spreadsheets/d/1C7cWDVRnCQVLRVquKoSN4dakCNZQtL5DqY4tPx6cC1Y/edit?pli=1&gid=1613698693#gid=1613698693' not found.")
         return pd.DataFrame()
 
 # --- Question Generator ---
