@@ -180,7 +180,7 @@ if not df.empty:
         # Build round-specific question set
 level_cfg = level_configs[st.session_state.current_level]
 random_pool = [k for k in quiz_options if k != 'Team']
-if not level_cfg['include_height']:
+    if not level_cfg['include_height']:
     random_pool = [k for k in random_pool if k != 'Height']
 
 # Select question categories for this round
