@@ -86,7 +86,6 @@ quiz_options = {
     'Height': 'Ht',
     'WNBA Experience': 'Exp',
     'College/Country': 'College',
-    'Position': 'Pos',
     'Draft Pick': 'Draft Pick'
 }
 
@@ -103,6 +102,19 @@ if 'score' not in st.session_state:
     st.session_state.selected_answer = None
 
 df = load_data()
+# Level-specific configuration
+level_configs = {
+    1: {'team_questions': 7, 'include_height': False},
+    2: {'team_questions': 5, 'include_height': False},
+    3: {'team_questions': 4, 'include_height': True},
+    4: {'team_questions': 3, 'include_height': True},
+    5: {'team_questions': 1, 'include_height': True},
+}
+
+# Initialize level tracking
+if 'current_level' not in st.session_state:
+    st.session_state.current_level = 1
+
 category_keys = list(quiz_options.keys())
 
 if not df.empty:
@@ -118,6 +130,18 @@ if not df.empty:
         st.stop()
 
     if st.session_state.q_number > 10:
+        if st.session_state.score == 10 and st.session_state.current_level < 5:
+            st.session_state.current_level += 1
+            st.success("🎉 Congratulations! You advance to the next round!")
+            time.sleep(2)
+        elif st.session_state.score == 10:
+            st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
+            time.sleep(2)
+
+        st.session_state.q_number = 1
+        st.session_state.score = 0
+        st.session_state.missed = []
+        st.rerun()
         st.session_state.quiz_complete = True
         st.subheader("🏁 Quiz Complete!")
         st.write(f"Your final score: {st.session_state.score} out of 10")
@@ -126,12 +150,22 @@ if not df.empty:
     current_category = category_keys[st.session_state.category_index % len(category_keys)]
 
     if 'current_q' not in st.session_state or not st.session_state.awaiting_input:
-        question, choices, answer = get_question(df, quiz_options[current_category])
+        # Build round-specific question set
+level_cfg = level_configs[st.session_state.current_level]
+random_pool = [k for k in quiz_options if k != 'Team']
+if not level_cfg['include_height']:
+    random_pool = [k for k in random_pool if k != 'Height']
+
+# Select question categories for this round
+question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, 10 - level_cfg['team_questions'])
+selected_category = question_categories[st.session_state.q_number - 1]
+
+question, choices, answer = get_question(df, quiz_options[selected_category])
         st.session_state.current_q = (question, choices, answer, current_category)
         st.session_state.awaiting_input = True
         st.session_state.selected_answer = None
 
-    question, choices, correct_answer, category_display = st.session_state.current_q
+    question, choices, correct_answer, category_display = question, choices, answer, selected_category
 
     st.markdown("""
 <div style='display: flex; align-items: center;'>
