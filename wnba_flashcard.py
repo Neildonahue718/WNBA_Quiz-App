@@ -45,8 +45,13 @@ def get_question(df, category):
 # --- Main App ---
 st.markdown("""
     <style>
+    div.stButton > button {
+        background-color: #FF7F00 !important;
+        color: white !important;
+    }
     div.stButton > button:hover {
-        color: #FF7F00 !important; /* WNBA orange */
+        background-color: #FF7F00 !important;
+        color: white !important;
     }
     </style>
 """, unsafe_allow_html=True)
