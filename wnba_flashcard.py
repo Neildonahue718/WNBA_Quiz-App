@@ -204,9 +204,9 @@ if not df.empty:
 """, unsafe_allow_html=True)
     st.markdown(f"<h3 style='margin-top: 0;'>Question {st.session_state.q_number} of 10:</h3>", unsafe_allow_html=True)
 st.progress(st.session_state.q_number - 1, text=f"Progress: Question {st.session_state.q_number} of 10")
-    if category_display == 'Draft Pick':
+if category_display == 'Draft Pick':
         st.write(f"Who was selected with the draft pick: **{question}**?")
-    else:
+else:
         st.write(f"What is the **{'WNBA experience' if category_display == 'WNBA Experience' else category_display.lower()}** of **{question}**?")
 
     for option in choices:
