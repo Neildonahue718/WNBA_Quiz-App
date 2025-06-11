@@ -132,8 +132,8 @@ if not df.empty:
     if st.session_state.q_number > 10:
         if st.session_state.score == 10 and st.session_state.current_level < 5:
             st.session_state.current_level += 1
-            st.success("🎉 Congratulations! You advance to the next round!")
-            time.sleep(2)
+            st.session_state.show_intro = True
+            st.rerun()
         elif st.session_state.score == 10:
             st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
             time.sleep(2)
@@ -148,6 +148,25 @@ if not df.empty:
         st.stop()
 
     current_category = category_keys[st.session_state.category_index % len(category_keys)]
+
+    if 'show_intro' in st.session_state and st.session_state.show_intro:
+        level_names = ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...']
+        level_intros = [
+            "You're getting noticed. Let’s see if you belong.",
+            "No slump allowed. You’ve been here before.",
+            "Money’s tight, pressure’s high. Let’s work.",
+            "No time off. Bring your A-game every night.",
+            "Legacy time. Can you go all the way?"
+        ]
+        st.title(f"🔥 Level {st.session_state.current_level}: {level_names[st.session_state.current_level - 1]} 🔥")
+        st.markdown(level_intros[st.session_state.current_level - 1])
+        time.sleep(3)
+        st.session_state.q_number = 1
+        st.session_state.score = 0
+        st.session_state.missed = []
+        st.session_state.awaiting_input = True
+        st.session_state.show_intro = False
+        st.rerun()
 
     if 'current_q' not in st.session_state or not st.session_state.awaiting_input:
         # Build round-specific question set
@@ -167,10 +186,12 @@ question, choices, answer = get_question(df, quiz_options[selected_category])
 
     question, choices, correct_answer, category_display = question, choices, answer, selected_category
 
-    st.markdown("""
+    st.markdown(f"""
 <div style='display: flex; align-items: center;'>
     <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png' width='50' style='margin-right: 15px;'>
-    <h1 style='margin: 0;'>WNBA Flashcard Trainer</h1>
+    <h1 style='margin: 0;'>WNBA Flashcard Trainer - Level {st.session_state.current_level}: {
+        ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...'][st.session_state.current_level - 1]
+    }</h1>
 </div>
 """, unsafe_allow_html=True)
     st.subheader(f"Question {st.session_state.q_number} of 10:")
