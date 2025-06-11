@@ -111,7 +111,7 @@ if not df.empty:
 
     st.markdown("""
 <div style='display: flex; align-items: center;'>
-    <img src='https://i.imgur.com/OqESyO8.png' width='50' style='margin-right: 15px;'>
+    <img src='https://upload.wikimedia.org/wikipedia/commons/6/60/Wilson_Basketball_WNBA.png' width='50' style='margin-right: 15px;'>
     <h1 style='margin: 0;'>WNBA Flashcard Trainer</h1>
 </div>
 """, unsafe_allow_html=True)
