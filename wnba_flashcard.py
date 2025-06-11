@@ -190,11 +190,16 @@ if not df.empty:
     question, choices, correct_answer, category_display = st.session_state.current_q
 
     st.markdown(f"""
-<div style='display: flex; align-items: center;'>
-    <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png' width='50' style='margin-right: 15px;'>
-    <h1 style='margin: 0;'>WNBA Flashcard Trainer - Level {st.session_state.current_level}: {
-        ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...'][st.session_state.current_level - 1]
-    }</h1>
+<div style='display: flex; align-items: center; flex-direction: column; align-items: flex-start;'>
+    <div style='display: flex; align-items: center;'>
+        <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png' width='50' style='margin-right: 15px;'>
+        <h1 style='margin: 0;'>WNBA Flashcard Trainer</h1>
+    </div>
+    <div style='background-color: #f0f0f0; padding: 4px 12px; border-radius: 4px; margin-top: 5px;'>
+        <strong>Level {st.session_state.current_level}: {
+            ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...'][st.session_state.current_level - 1]
+        }</strong>
+    </div>
 </div>
 """, unsafe_allow_html=True)
     st.subheader(f"Question {st.session_state.q_number} of 10:")
