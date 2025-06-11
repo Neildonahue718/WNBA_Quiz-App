@@ -196,13 +196,14 @@ if not df.empty:
         <h1 style='margin: 0;'>WNBA Flashcard Trainer</h1>
     </div>
     <div style='background-color: #f0f0f0; padding: 4px 12px; border-radius: 4px; margin-top: 5px;'>
-        <strong>Level {st.session_state.current_level}: {
+        <strong style='font-size: 1.4em;'>Level {st.session_state.current_level}: {
             ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...'][st.session_state.current_level - 1]
         }</strong>
     </div>
 </div>
 """, unsafe_allow_html=True)
-    st.subheader(f"Question {st.session_state.q_number} of 10:")
+    st.markdown(f"<h3 style='margin-top: 0;'>Question {st.session_state.q_number} of 10:</h3>", unsafe_allow_html=True)
+st.progress(st.session_state.q_number - 1, text=f"Progress: Question {st.session_state.q_number} of 10")
     if category_display == 'Draft Pick':
         st.write(f"Who was selected with the draft pick: **{question}**?")
     else:
