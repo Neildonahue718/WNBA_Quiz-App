@@ -118,12 +118,7 @@ if 'current_level' not in st.session_state:
 category_keys = list(quiz_options.keys())
 
 level_names = ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...']
-st.markdown(f"""
-<div style='display: flex; align-items: center;'>
-    <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png' width='50' style='margin-right: 15px;'>
-    <h1 style='margin: 0;'>WNBA Flashcard Trainer - Level {st.session_state.current_level}: {level_names[st.session_state.current_level - 1]}</h1>
-</div>
-""", unsafe_allow_html=True)
+
 
 if not df.empty:
     if st.button("Review Missed Answers"):
