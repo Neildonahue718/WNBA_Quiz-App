@@ -202,7 +202,7 @@ if not df.empty:
         </div>
     </div>
     """, unsafe_allow_html=True)
-                    st.markdown(f"<h3 style='margin-top: 0;'>Question {st.session_state.q_number} of 10:</h3>", unsafe_allow_html=True)
+                st.markdown(f"<h3 style='margin-top: 0;'>Question {st.session_state.q_number} of 10:</h3>", unsafe_allow_html=True)
                 st.progress(st.session_state.q_number - 1, text=f"Progress: Question {st.session_state.q_number} of 10")
 
     if category_display == 'Draft Pick':
