@@ -10,8 +10,8 @@ def load_data():
         df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSo78o_XcjeBYWvYnDBaSolSgf6JAGvBCBSNipn9iLe7KsZkfLI3XCGbVb90oT0wsD57K6h7lR1H5wo/pub?output=csv')
         df = df[['Player', 'Team', 'Age', 'Ht', 'Exp', 'College', 'Pos', 'Draft Pick']].dropna().drop_duplicates()
         return df
-    except FileNotFoundError:
-        st.error("Error: Google Sheet not found.")
+    except Exception as e:
+        st.error(f"❌ Failed to load data: {e}")
         return pd.DataFrame()
 
 # --- Question Generator ---
