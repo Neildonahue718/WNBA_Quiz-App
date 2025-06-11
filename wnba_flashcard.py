@@ -110,9 +110,11 @@ if not df.empty:
                 st.session_state.selected_answer = option
 
                 if option == correct_answer:
+                    st.success("✅ Correct!")
                     st.session_state.score += 1
                     st.session_state.correct = True
                 else:
+                    st.error(f"❌ Incorrect. The correct answer was: {correct_answer}")
                     st.session_state.correct = False
                     st.session_state.missed.append({
                         'question': f"{('Who was selected with the draft pick: ' + question) if category_display == 'Draft Pick' else f'What is the {category_display.lower()} of {question}?'}",
