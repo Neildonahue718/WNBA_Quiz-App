@@ -190,18 +190,18 @@ if not df.empty:
     question, choices, correct_answer, category_display = st.session_state.current_q
 
     st.markdown(f"""
-<div style='display: flex; align-items: center; flex-direction: column; align-items: flex-start;'>
-    <div style='display: flex; align-items: center;'>
-        <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png' width='50' style='margin-right: 15px;'>
-        <h1 style='margin: 0;'>WNBA Flashcard Trainer</h1>
+    <div style='display: flex; align-items: center; flex-direction: column; align-items: flex-start;'>
+        <div style='display: flex; align-items: center;'>
+            <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png' width='50' style='margin-right: 15px;'>
+            <h1 style='margin: 0;'>WNBA Flashcard Trainer</h1>
+        </div>
+        <div style='background-color: #f0f0f0; padding: 4px 12px; border-radius: 4px; margin-top: 5px;'>
+            <strong style='font-size: 1.4em;'>Level {st.session_state.current_level}: {
+                ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...'][st.session_state.current_level - 1]
+            }</strong>
+        </div>
     </div>
-    <div style='background-color: #f0f0f0; padding: 4px 12px; border-radius: 4px; margin-top: 5px;'>
-        <strong style='font-size: 1.4em;'>Level {st.session_state.current_level}: {
-            ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...'][st.session_state.current_level - 1]
-        }</strong>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
         st.markdown(f"<h3 style='margin-top: 0;'>Question {st.session_state.q_number} of 10:</h3>", unsafe_allow_html=True)
     st.progress(st.session_state.q_number - 1, text=f"Progress: Question {st.session_state.q_number} of 10")
 
@@ -211,7 +211,7 @@ if not df.empty:
         st.write(f"What is the **{'WNBA experience' if category_display == 'WNBA Experience' else category_display.lower()}** of **{question}**?")
 
     for option in choices:
-        if st.button(str(option), key=option):str(option), key=option):
+        if st.button(str(option), key=option):
             if st.session_state.awaiting_input:
                 st.session_state.awaiting_input = False
                 st.session_state.selected_answer = option
@@ -233,7 +233,7 @@ if not df.empty:
                 time.sleep(1)
                 st.rerun()
 
-        st.markdown(f"**Current Score:** {st.session_state.score} / {min(st.session_state.q_number - 1, 10)}")
+    st.markdown(f"**Current Score:** {st.session_state.score} / {min(st.session_state.q_number - 1, 10)}")
 else:
     st.warning("⚠️ No data found! Please check the Google Sheet link.")
     st.stop()
