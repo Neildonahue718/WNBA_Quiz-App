@@ -109,7 +109,12 @@ if not df.empty:
 
     question, choices, correct_answer, category_display = st.session_state.current_q
 
-    st.title("🏀 WNBA Flashcard Trainer")
+    st.markdown("""
+<div style='display: flex; align-items: center;'>
+    <img src='https://upload.wikimedia.org/wikipedia/commons/6/60/Wilson_Basketball_WNBA.png' width='50' style='margin-right: 15px;'>
+    <h1 style='margin: 0;'>WNBA Flashcard Trainer</h1>
+</div>
+""", unsafe_allow_html=True)
     st.subheader(f"Question {st.session_state.q_number} of 10:")
     if category_display == 'Draft Pick':
         st.write(f"Who was selected with the draft pick: **{question}**?")
