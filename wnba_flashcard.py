@@ -43,6 +43,14 @@ def get_question(df, category):
     return question, options, correct_answer
 
 # --- Main App ---
+st.markdown("""
+    <style>
+    div.stButton > button:hover {
+        color: #FF7F00 !important; /* WNBA orange */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 quiz_options = {
     'Team': 'Team',
     'Age': 'Age',
