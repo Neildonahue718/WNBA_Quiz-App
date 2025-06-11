@@ -187,7 +187,7 @@ if not df.empty:
         st.session_state.awaiting_input = True
         st.session_state.selected_answer = None
 
-    question, choices, correct_answer, category_display = question, choices, answer, selected_category
+    question, choices, correct_answer, category_display = st.session_state.current_q
 
     st.markdown(f"""
 <div style='display: flex; align-items: center;'>
