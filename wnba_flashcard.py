@@ -178,17 +178,17 @@ if not df.empty:
 
     if 'current_q' not in st.session_state or not st.session_state.awaiting_input:
         # Build round-specific question set
-level_cfg = level_configs[st.session_state.current_level]
-random_pool = [k for k in quiz_options if k != 'Team']
-    if not level_cfg['include_height']:
-    random_pool = [k for k in random_pool if k != 'Height']
+        level_cfg = level_configs[st.session_state.current_level]
+        random_pool = [k for k in quiz_options if k != 'Team']
+        if not level_cfg['include_height']:
+            random_pool = [k for k in random_pool if k != 'Height']
 
-# Select question categories for this round
-question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, 10 - level_cfg['team_questions'])
-selected_category = question_categories[st.session_state.q_number - 1]
+        # Select question categories for this round
+        question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, 10 - level_cfg['team_questions'])
+        selected_category = question_categories[st.session_state.q_number - 1]
 
-question, choices, answer = get_question(df, quiz_options[selected_category])
-        st.session_state.current_q = (question, choices, answer, current_category)
+        question, choices, answer = get_question(df, quiz_options[selected_category])
+        st.session_state.current_q = (question, choices, answer, selected_category)
         st.session_state.awaiting_input = True
         st.session_state.selected_answer = None
 
