@@ -30,6 +30,30 @@ def get_question(df, category):
         options = [correct_numeric] + sampled
         random.shuffle(options)
         return question, options, correct_numeric
+    elif category == 'Ht':
+        def height_to_inches(height):
+            parts = height.replace("\"", "").split("'")
+            return int(parts[0]) * 12 + int(parts[1]) if len(parts) == 2 else None
+
+        def inches_to_height(inches):
+            return f"{inches // 12}' {inches % 12}\""
+
+        correct_answer = player_info['Ht']
+        correct_inches = height_to_inches(correct_answer)
+        question = player_info['Player']
+        valid_heights = df['Ht'].dropna().unique().tolist()
+
+        # Convert and filter heights by 2 inch spacing
+        spaced = []
+        for h in valid_heights:
+            inches = height_to_inches(h)
+            if inches and abs(inches - correct_inches) >= 2:
+                spaced.append(h)
+
+        sampled = random.sample(spaced, k=3) if len(spaced) >= 3 else spaced
+        options = [correct_answer] + sampled
+        random.shuffle(options)
+        return question, options, correct_answer
     else:
         correct_answer = player_info[category]
         question = player_info['Player']
@@ -60,7 +84,7 @@ quiz_options = {
     'Team': 'Team',
     'Age': 'Age',
     'Height': 'Ht',
-    'Experience (Years)': 'Exp',
+    'WNBA Experience': 'Exp',
     'College/Country': 'College',
     'Position': 'Pos',
     'Draft Pick': 'Draft Pick'
@@ -119,7 +143,7 @@ if not df.empty:
     if category_display == 'Draft Pick':
         st.write(f"Who was selected with the draft pick: **{question}**?")
     else:
-        st.write(f"What is the **{category_display.lower()}** of **{question}**?")
+        st.write(f"What is the **{'WNBA experience' if category_display == 'WNBA Experience' else category_display.lower()}** of **{question}**?")
 
     for option in choices:
         if st.button(str(option), key=option):
