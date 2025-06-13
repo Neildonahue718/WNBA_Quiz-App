@@ -212,7 +212,7 @@ if not df.empty:
             question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, sample_size)
         selected_category = question_categories[st.session_state.q_number - 1]
 
-                used = st.session_state.get('used_players', set())
+        used = st.session_state.get('used_players', set())
         filtered_df = df[~df['Player'].isin(used)]
         if filtered_df.empty:
             st.session_state.used_players = set()
