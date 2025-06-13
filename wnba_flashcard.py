@@ -185,7 +185,7 @@ if not df.empty:
 
         # Select question categories for this round
         sample_size = min(10 - level_cfg['team_questions'], len(random_pool))
-                        if st.session_state.current_level == 1:
+        if st.session_state.current_level == 1:
             question_categories = ['Team'] * 6 + ['College/Country'] * 4
         elif st.session_state.current_level == 4:
             question_categories = ['Team'] * 3 + ['College/Country', 'WNBA Experience', 'Draft Pick', 'Age', 'Height', 'Draft Pick', 'Age']
