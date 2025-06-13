@@ -3,7 +3,6 @@ import pandas as pd
 import random
 import time
 
-# --- Load Data ---
 @st.cache_data
 def load_data():
     try:
@@ -14,7 +13,6 @@ def load_data():
         st.error(f"❌ Failed to load data: {e}")
         return pd.DataFrame()
 
-# --- Question Generator ---
 def get_question(df, category):
     player_info = df.sample(n=1).iloc[0]
     if category == 'Draft Pick':
@@ -35,21 +33,11 @@ def get_question(df, category):
             parts = height.replace("\"", "").split("'")
             return int(parts[0]) * 12 + int(parts[1]) if len(parts) == 2 else None
 
-        def inches_to_height(inches):
-            return f"{inches // 12}' {inches % 12}\""
-
         correct_answer = player_info['Ht']
         correct_inches = height_to_inches(correct_answer)
         question = player_info['Player']
         valid_heights = df['Ht'].dropna().unique().tolist()
-
-        # Convert and filter heights by 2 inch spacing
-        spaced = []
-        for h in valid_heights:
-            inches = height_to_inches(h)
-            if inches and abs(inches - correct_inches) >= 2:
-                spaced.append(h)
-
+        spaced = [h for h in valid_heights if height_to_inches(h) and abs(height_to_inches(h) - correct_inches) >= 2]
         sampled = random.sample(spaced, k=3) if len(spaced) >= 3 else spaced
         options = [correct_answer] + sampled
         random.shuffle(options)
@@ -63,10 +51,8 @@ def get_question(df, category):
     sampled = random.sample(other_choices, k=3) if len(other_choices) >= 3 else other_choices
     options = [correct_answer] + sampled
     random.shuffle(options)
-
     return question, options, correct_answer
 
-# --- Main App ---
 st.markdown("""
     <style>
     div.stButton > button {
@@ -90,19 +76,15 @@ quiz_options = {
 }
 
 if 'score' not in st.session_state:
-    st.session_state.score = 0
-    st.session_state.q_number = 1
-    st.session_state.last_answered = False
-    st.session_state.correct = None
-    st.session_state.missed = []
-    st.session_state.category_index = 0
-    st.session_state.review_mode = False
-    st.session_state.quiz_complete = False
-    st.session_state.awaiting_input = True
-    st.session_state.selected_answer = None
+    st.session_state.update({
+        'score': 0, 'q_number': 1, 'last_answered': False,
+        'correct': None, 'missed': [], 'category_index': 0,
+        'review_mode': False, 'quiz_complete': False,
+        'awaiting_input': True, 'selected_answer': None,
+        'current_level': 1, 'used_players': set()
+    })
 
 df = load_data()
-# Level-specific configuration
 level_configs = {
     1: {'team_questions': 7, 'include_height': False},
     2: {'team_questions': 5, 'include_height': False},
@@ -110,17 +92,26 @@ level_configs = {
     4: {'team_questions': 3, 'include_height': True},
     5: {'team_questions': 1, 'include_height': True},
 }
-
-# Initialize level tracking
-if 'current_level' not in st.session_state:
-    st.session_state.current_level = 1
-
-category_keys = list(quiz_options.keys())
-
 level_names = ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...']
 
-
 if not df.empty:
+    if st.session_state.q_number > 10:
+        if st.session_state.score == 10:
+            if st.session_state.current_level < 5:
+                st.session_state.current_level += 1
+                st.session_state.show_intro = True
+            else:
+                st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
+                time.sleep(2)
+            st.session_state.q_number = 1
+            st.session_state.score = 0
+            st.session_state.missed = []
+            st.session_state.current_q = None
+            st.rerun()
+        else:
+            st.session_state.review_mode = True
+            st.session_state.quiz_complete = True
+
     if st.button("Review Missed Answers"):
         st.session_state.review_mode = True
 
@@ -132,42 +123,7 @@ if not df.empty:
             st.markdown(f"Correct answer: ✅ {missed['correct_answer']}")
         st.stop()
 
-    if st.session_state.q_number > 10:
-        if st.session_state.score == 10 and st.session_state.current_level < 5:
-            st.session_state.current_level += 1
-            st.session_state.current_q = None
-            st.session_state.q_number = 1
-            st.session_state.score = 0
-            st.session_state.missed = []
-            st.session_state.show_intro = True
-            st.session_state.awaiting_input = False
-            st.rerun()
-
-        elif st.session_state.score == 10:
-            st.session_state.current_q = None
-            st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
-            time.sleep(2)
-            st.session_state.q_number = 1
-            st.session_state.score = 0
-            st.session_state.missed = []
-            st.session_state.quiz_complete = True
-            st.session_state.awaiting_input = False
-            st.rerun()
-
-        else:
-            st.session_state.current_q = None
-            st.session_state.q_number = 1
-            st.session_state.awaiting_input = False
-            st.session_state.review_mode = False
-            st.session_state.quiz_complete = False
-            st.session_state.level_repeat = True
-            st.session_state.show_intro = True
-            st.rerun()
-
-    current_category = category_keys[st.session_state.category_index % len(category_keys)]
-
     if 'show_intro' in st.session_state and st.session_state.show_intro:
-        level_names = ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...']
         level_intros = [
             "You're getting noticed. Let’s see if you belong.",
             "No slump allowed. You’ve been here before.",
@@ -177,22 +133,21 @@ if not df.empty:
         ]
         st.title(f"🔥 Level {st.session_state.current_level}: {level_names[st.session_state.current_level - 1]} 🔥")
         st.markdown(level_intros[st.session_state.current_level - 1])
-        time.sleep(3)
-        st.session_state.q_number = 1
-        st.session_state.score = 0
-        st.session_state.missed = []
-        st.session_state.awaiting_input = True
-        st.session_state.show_intro = False
+        st.session_state.update({
+            'q_number': 1,
+            'score': 0,
+            'missed': [],
+            'awaiting_input': True,
+            'show_intro': False
+        })
         st.rerun()
 
     if 'current_q' not in st.session_state or not st.session_state.awaiting_input:
-        # Build round-specific question set
         level_cfg = level_configs[st.session_state.current_level]
         random_pool = [k for k in quiz_options if k != 'Team']
         if st.session_state.current_level < 4:
             random_pool = [k for k in random_pool if k != 'Height']
 
-        # Select question categories for this round
         sample_size = min(10 - level_cfg['team_questions'], len(random_pool))
         if st.session_state.current_level == 1:
             question_categories = ['Team'] * 6 + ['College/Country'] * 4
@@ -200,19 +155,17 @@ if not df.empty:
             question_categories = ['Team'] * 3 + ['College/Country', 'WNBA Experience', 'Draft Pick', 'Age', 'Height', 'Draft Pick', 'Age']
         elif st.session_state.current_level == 5:
             question_categories = ['Team'] + ['College/Country', 'WNBA Experience', 'Draft Pick', 'Age', 'Height', 'College/Country', 'Draft Pick', 'Age', 'Height']
-        
         else:
             question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, sample_size)
-        selected_category = question_categories[st.session_state.q_number - 1]
 
-        used = st.session_state.get('used_players', set())
-        filtered_df = df[~df['Player'].isin(used)]
+        selected_category = question_categories[st.session_state.q_number - 1]
+        filtered_df = df[~df['Player'].isin(st.session_state.used_players)]
         if filtered_df.empty:
             st.session_state.used_players = set()
             filtered_df = df.copy()
+
         question, choices, answer = get_question(filtered_df, quiz_options[selected_category])
         st.session_state.current_q = (question, choices, answer, selected_category)
-        st.session_state.used_players = st.session_state.get('used_players', set())
         st.session_state.used_players.add(question)
         st.session_state.awaiting_input = True
         st.session_state.selected_answer = None
@@ -229,9 +182,7 @@ if not df.empty:
             <h1 style='margin: 0;'>WNBA Flashcard Trainer</h1>
         </div>
         <div style='background-color: #f0f0f0; padding: 4px 12px; border-radius: 4px; margin-top: 5px;'>
-            <strong style='font-size: 1.4em;'>Level {st.session_state.current_level}: {
-                ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...'][st.session_state.current_level - 1]
-            }</strong>
+            <strong style='font-size: 1.4em;'>Level {st.session_state.current_level}: {level_names[st.session_state.current_level - 1]}</strong>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -250,22 +201,17 @@ if not df.empty:
             if st.session_state.awaiting_input:
                 st.session_state.awaiting_input = False
                 st.session_state.selected_answer = option
-
                 if option == correct_answer:
                     st.success("✅ Correct!")
                     st.session_state.score += 1
-                    st.session_state.correct = True
                 else:
                     st.error(f"❌ Incorrect. The correct answer was: {correct_answer}")
-                    st.session_state.correct = False
                     st.session_state.missed.append({
                         'question': f"{('Who was selected with the draft pick: ' + question) if category_display == 'Draft Pick' else f'What is the {category_display.lower()} of {question}?'}",
                         'your_answer': option,
                         'correct_answer': correct_answer
                     })
                 st.session_state.q_number += 1
-                st.session_state.category_index += 1
-                time.sleep(1)
                 st.rerun()
 
     st.markdown(f"**Current Score:** {st.session_state.score} / {min(st.session_state.q_number - 1, 10)}")
