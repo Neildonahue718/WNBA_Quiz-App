@@ -151,10 +151,7 @@ if not df.empty:
             st.subheader("🏁 Quiz Complete!")
             st.write(f"Your final score: {st.session_state.score} out of 10")
             st.stop()
-        elif st.session_state.score == 10:
-            st.session_state.current_q = None
-            st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
-            time.sleep(2)
+
 
         st.session_state.q_number = 1
         st.session_state.score = 0
