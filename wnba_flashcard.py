@@ -191,8 +191,7 @@ if not df.empty:
             question_categories = ['Team'] * 3 + ['College/Country', 'WNBA Experience', 'Draft Pick', 'Age', 'Height', 'Draft Pick', 'Age']
         elif st.session_state.current_level == 5:
             question_categories = ['Team'] + ['College/Country', 'WNBA Experience', 'Draft Pick', 'Age', 'Height', 'College/Country', 'Draft Pick', 'Age', 'Height']
-        else:
-            question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, sample_size)
+        
         else:
             question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, sample_size)
         selected_category = question_categories[st.session_state.q_number - 1]
