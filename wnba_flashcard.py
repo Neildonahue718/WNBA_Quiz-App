@@ -100,18 +100,20 @@ if not df.empty:
             if st.session_state.current_level < 5:
                 st.session_state.current_level += 1
                 st.session_state.show_intro = True
+                st.session_state.update({
+                    'q_number': 1,
+                    'score': 0,
+                    'missed': [],
+                    'current_q': None,
+                    'awaiting_input': True,
+                    'review_mode': False
+                })
+                st.rerun()
             else:
                 st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
                 time.sleep(2)
-            st.session_state.update({
-                'q_number': 1,
-                'score': 0,
-                'missed': [],
-                'current_q': None,
-                'awaiting_input': True,
-                'review_mode': False
-            })
-            st.rerun()
+                st.session_state.quiz_complete = True
+                st.stop()
         else:
             st.session_state.quiz_complete = True
             st.session_state.review_mode = True
@@ -122,8 +124,15 @@ if not df.empty:
             st.markdown("**Click 'Review Missed Answers' above to see your mistakes.**")
             st.stop()
         else:
-            st.session_state.review_mode = True
             st.session_state.quiz_complete = True
+            st.session_state.review_mode = True
+            st.session_state.current_q = None
+            st.session_state.awaiting_input = False
+            st.subheader("🏁 Quiz Complete!")
+            st.write(f"Your final score: {st.session_state.score} out of 10")
+            st.markdown("**Click 'Review Missed Answers' above to see your mistakes.**")
+            st.stop()
+        
 
     if st.button("Review Missed Answers"):
         st.session_state.review_mode = True
