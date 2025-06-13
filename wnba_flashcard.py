@@ -109,14 +109,18 @@ if not df.empty:
                     'review_mode': False
                 })
                 st.rerun()
-            else:
-                st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
-                time.sleep(2)
-                st.session_state.quiz_complete = True
-                st.stop()
-                else:
+                    else:
+            st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
+            time.sleep(2)
             st.session_state.quiz_complete = True
+            st.session_state.current_q = None
+            st.session_state.awaiting_input = False
             st.session_state.review_mode = True
+            st.subheader("🏁 Quiz Complete!")
+            st.write(f"Your final score: {st.session_state.score} out of 10")
+            st.markdown("**Click 'Review Missed Answers' above to see your mistakes.**")
+            st.stop()
+                
             st.session_state.current_q = None
             st.session_state.awaiting_input = False
             st.subheader("🏁 Quiz Complete!")
