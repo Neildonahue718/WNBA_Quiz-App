@@ -142,6 +142,7 @@ if not df.empty:
             st.session_state.show_intro = True
             st.rerun()
         elif st.session_state.score == 10:
+            st.session_state.current_q = None
             st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
             time.sleep(2)
 
@@ -179,11 +180,21 @@ if not df.empty:
         # Build round-specific question set
         level_cfg = level_configs[st.session_state.current_level]
         random_pool = [k for k in quiz_options if k != 'Team']
-        if not level_cfg['include_height']:
+        if st.session_state.current_level < 4:
             random_pool = [k for k in random_pool if k != 'Height']
 
         # Select question categories for this round
-        question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, 10 - level_cfg['team_questions'])
+        sample_size = min(10 - level_cfg['team_questions'], len(random_pool))
+                        if st.session_state.current_level == 1:
+            question_categories = ['Team'] * 6 + ['College/Country'] * 4
+        elif st.session_state.current_level == 4:
+            question_categories = ['Team'] * 3 + ['College/Country', 'WNBA Experience', 'Draft Pick', 'Age', 'Height', 'Draft Pick', 'Age']
+        elif st.session_state.current_level == 5:
+            question_categories = ['Team'] + ['College/Country', 'WNBA Experience', 'Draft Pick', 'Age', 'Height', 'College/Country', 'Draft Pick', 'Age', 'Height']
+        else:
+            question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, sample_size)
+        else:
+            question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, sample_size)
         selected_category = question_categories[st.session_state.q_number - 1]
 
         question, choices, answer = get_question(df, quiz_options[selected_category])
@@ -209,7 +220,9 @@ if not df.empty:
     st.markdown(f"<h3 style='margin-top: 0;'>Question {st.session_state.q_number} of 10:</h3>", unsafe_allow_html=True)
     st.progress(st.session_state.q_number - 1, text=f"Progress: Question {st.session_state.q_number} of 10")
 
-    if category_display == 'Draft Pick':
+    if category_display == 'Team':
+        st.write(f"{question} plays for what team?")
+    elif category_display == 'Draft Pick':
         st.write(f"Who was selected with the draft pick: **{question}**?")
     else:
         st.write(f"What is the **{'WNBA experience' if category_display == 'WNBA Experience' else category_display.lower()}** of **{question}**?")
