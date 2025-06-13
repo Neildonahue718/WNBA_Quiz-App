@@ -140,6 +140,7 @@ if not df.empty:
             st.session_state.score = 0
             st.session_state.missed = []
             st.session_state.show_intro = True
+            st.session_state.awaiting_input = False
             st.rerun()
 
         elif st.session_state.score == 10:
@@ -150,13 +151,16 @@ if not df.empty:
             st.session_state.score = 0
             st.session_state.missed = []
             st.session_state.quiz_complete = True
+            st.session_state.awaiting_input = False
             st.rerun()
+
         else:
             st.session_state.current_q = None
             st.session_state.q_number = 1
             st.session_state.score = 0
             st.session_state.missed = []
             st.session_state.quiz_complete = True
+            st.session_state.awaiting_input = False
             st.subheader("🏁 Quiz Complete!")
             st.write(f"Your final score: {st.session_state.score} out of 10")
             st.stop()
