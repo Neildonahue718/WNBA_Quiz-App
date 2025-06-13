@@ -135,6 +135,7 @@ if not df.empty:
     if st.session_state.q_number > 10:
         if st.session_state.score == 10 and st.session_state.current_level < 5:
             st.session_state.current_level += 1
+            st.session_state.current_q = None
             st.session_state.q_number = 1
             st.session_state.score = 0
             st.session_state.missed = []
