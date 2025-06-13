@@ -114,16 +114,7 @@ if not df.empty:
                 time.sleep(2)
                 st.session_state.quiz_complete = True
                 st.stop()
-        else:
-            st.session_state.quiz_complete = True
-            st.session_state.review_mode = True
-            st.session_state.current_q = None
-            st.session_state.awaiting_input = False
-            st.subheader("🏁 Quiz Complete!")
-            st.write(f"Your final score: {st.session_state.score} out of 10")
-            st.markdown("**Click 'Review Missed Answers' above to see your mistakes.**")
-            st.stop()
-        else:
+                else:
             st.session_state.quiz_complete = True
             st.session_state.review_mode = True
             st.session_state.current_q = None
