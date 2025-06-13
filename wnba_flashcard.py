@@ -201,7 +201,7 @@ if not df.empty:
         st.session_state.awaiting_input = True
         st.session_state.selected_answer = None
 
-        if 'current_q' not in st.session_state or st.session_state.current_q is None:
+    if 'current_q' not in st.session_state or st.session_state.current_q is None:
         st.stop()
 
     question, choices, correct_answer, category_display = st.session_state.current_q
