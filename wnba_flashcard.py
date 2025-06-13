@@ -211,8 +211,8 @@ if not df.empty:
         st.write(f"What is the **{'WNBA experience' if category_display == 'WNBA Experience' else category_display.lower()}** of **{question}**?")
 
     for option in choices:
-        if st.button(str(option), key=option):
-            if st.session_state.awaiting_input:
+        if st.session_state.awaiting_input:
+            if st.button(str(option), key=option):
                 st.session_state.awaiting_input = False
                 st.session_state.selected_answer = option
                 if option == correct_answer:
@@ -226,15 +226,18 @@ if not df.empty:
                         'correct_answer': correct_answer
                     })
                 st.session_state.q_number += 1
-                time.sleep(1)
+                st.session_state.feedback_mode = True
                 st.rerun()
 
-    if 'last_feedback' in st.session_state:
+    if st.session_state.get("feedback_mode"):
         if st.session_state.last_feedback == "correct":
             st.success("✅ Correct!")
         elif st.session_state.last_feedback == "incorrect":
             st.error(f"❌ Incorrect. The correct answer was: {correct_answer}")
-        del st.session_state.last_feedback
+        if st.button("Next Question"):
+            st.session_state.feedback_mode = False
+            del st.session_state.last_feedback
+            st.rerun()
 
     st.markdown(f"**Current Score:** {st.session_state.score} / {min(st.session_state.q_number - 1, 10)}")
 else:
