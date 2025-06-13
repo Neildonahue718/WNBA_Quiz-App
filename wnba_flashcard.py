@@ -155,21 +155,14 @@ if not df.empty:
             st.rerun()
 
         else:
-            st.session_state.quiz_complete = True
-            st.session_state.subheader("🏁 Quiz Complete!")
-            st.write(f"Your final score: {st.session_state.score} out of 10")
-            st.markdown("**Click 'Review Missed Answers' above to see your mistakes.**")
-            st.stop()
-
-
-        st.session_state.q_number = 1
-        st.session_state.score = 0
-        st.session_state.missed = []
-        st.rerun()
-        st.session_state.quiz_complete = True
-        st.subheader("🏁 Quiz Complete!")
-        st.write(f"Your final score: {st.session_state.score} out of 10")
-        st.stop()
+            st.session_state.current_q = None
+            st.session_state.q_number = 1
+            st.session_state.awaiting_input = False
+            st.session_state.review_mode = False
+            st.session_state.quiz_complete = False
+            st.session_state.level_repeat = True
+            st.session_state.show_intro = True
+            st.rerun()
 
     current_category = category_keys[st.session_state.category_index % len(category_keys)]
 
