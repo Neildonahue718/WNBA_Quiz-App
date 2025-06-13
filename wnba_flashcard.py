@@ -81,7 +81,7 @@ if 'score' not in st.session_state:
         'correct': None, 'missed': [], 'category_index': 0,
         'review_mode': False, 'quiz_complete': False,
         'awaiting_input': True, 'selected_answer': None,
-        'current_level': 1, 'used_players': set()
+        'current_level': 1, 'used_players': set(), 'show_intro': False
     })
 
 df = load_data()
@@ -109,25 +109,21 @@ if not df.empty:
                     'review_mode': False
                 })
                 st.rerun()
-                    else:
-            st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
-            time.sleep(2)
+            else:
+                st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
+                time.sleep(2)
+                st.session_state.quiz_complete = True
+                st.session_state.review_mode = True
+                st.session_state.stop()
+        else:
             st.session_state.quiz_complete = True
-            st.session_state.current_q = None
-            st.session_state.awaiting_input = False
             st.session_state.review_mode = True
-            st.subheader("🏁 Quiz Complete!")
-            st.write(f"Your final score: {st.session_state.score} out of 10")
-            st.markdown("**Click 'Review Missed Answers' above to see your mistakes.**")
-            st.stop()
-                
             st.session_state.current_q = None
             st.session_state.awaiting_input = False
             st.subheader("🏁 Quiz Complete!")
             st.write(f"Your final score: {st.session_state.score} out of 10")
             st.markdown("**Click 'Review Missed Answers' above to see your mistakes.**")
             st.stop()
-        
 
     if st.button("Review Missed Answers"):
         st.session_state.review_mode = True
@@ -138,9 +134,10 @@ if not df.empty:
             st.markdown(f"**{missed['question']}**")
             st.markdown(f"Your answer: ❌ {missed['your_answer']}")
             st.markdown(f"Correct answer: ✅ {missed['correct_answer']}")
-        st.stop()
+        st.session_state.review_mode = False
+        st.rerun()
 
-    if 'show_intro' in st.session_state and st.session_state.show_intro:
+    if st.session_state.show_intro:
         level_intros = [
             "You're getting noticed. Let’s see if you belong.",
             "No slump allowed. You’ve been here before.",
