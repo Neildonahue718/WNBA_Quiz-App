@@ -114,15 +114,34 @@ if not df.empty:
                 time.sleep(2)
                 st.session_state.quiz_complete = True
                 st.session_state.review_mode = True
-                st.session_state.stop()
+                st.stop()
         else:
+            # FIXED: Reset to level 1 when score is not perfect
+            st.session_state.current_level = 1
             st.session_state.quiz_complete = True
             st.session_state.review_mode = True
             st.session_state.current_q = None
             st.session_state.awaiting_input = False
             st.subheader("🏁 Quiz Complete!")
             st.write(f"Your final score: {st.session_state.score} out of 10")
-            st.markdown("**Click 'Review Missed Answers' above to see your mistakes.**")
+            st.markdown("**You need a perfect score to advance! Starting over at Level 1.**")
+            st.markdown("**Click 'Review Missed Answers' to see your mistakes, then try again!**")
+            
+            # Add a restart button
+            if st.button("🔄 Start Over at Level 1"):
+                st.session_state.update({
+                    'score': 0,
+                    'q_number': 1,
+                    'missed': [],
+                    'current_q': None,
+                    'awaiting_input': True,
+                    'review_mode': False,
+                    'quiz_complete': False,
+                    'current_level': 1,
+                    'used_players': set(),
+                    'show_intro': False
+                })
+                st.rerun()
             st.stop()
 
     if st.button("Review Missed Answers"):
@@ -134,27 +153,34 @@ if not df.empty:
             st.markdown(f"**{missed['question']}**")
             st.markdown(f"Your answer: ❌ {missed['your_answer']}")
             st.markdown(f"Correct answer: ✅ {missed['correct_answer']}")
-        st.session_state.review_mode = False
-        st.rerun()
+        
+        # Add a button to go back to the main screen
+        if st.button("🔙 Back to Quiz"):
+            st.session_state.review_mode = False
+            st.rerun()
+        st.stop()
 
     if st.session_state.show_intro:
         level_intros = [
-            "You're getting noticed. Let’s see if you belong.",
-            "No slump allowed. You’ve been here before.",
-            "Money’s tight, pressure’s high. Let’s work.",
+            "You're getting noticed. Let's see if you belong.",
+            "No slump allowed. You've been here before.",
+            "Money's tight, pressure's high. Let's work.",
             "No time off. Bring your A-game every night.",
             "Legacy time. Can you go all the way?"
         ]
         st.title(f"🔥 Level {st.session_state.current_level}: {level_names[st.session_state.current_level - 1]} 🔥")
         st.markdown(level_intros[st.session_state.current_level - 1])
-        st.session_state.update({
-            'q_number': 1,
-            'score': 0,
-            'missed': [],
-            'awaiting_input': True,
-            'show_intro': False
-        })
-        st.rerun()
+        
+        if st.button("🚀 Start Level"):
+            st.session_state.update({
+                'q_number': 1,
+                'score': 0,
+                'missed': [],
+                'awaiting_input': True,
+                'show_intro': False
+            })
+            st.rerun()
+        st.stop()
 
     if 'current_q' not in st.session_state or not st.session_state.awaiting_input:
         level_cfg = level_configs[st.session_state.current_level]
