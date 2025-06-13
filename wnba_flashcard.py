@@ -212,8 +212,15 @@ if not df.empty:
             question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, sample_size)
         selected_category = question_categories[st.session_state.q_number - 1]
 
-        question, choices, answer = get_question(df, quiz_options[selected_category])
+                used = st.session_state.get('used_players', set())
+        filtered_df = df[~df['Player'].isin(used)]
+        if filtered_df.empty:
+            st.session_state.used_players = set()
+            filtered_df = df.copy()
+        question, choices, answer = get_question(filtered_df, quiz_options[selected_category])
         st.session_state.current_q = (question, choices, answer, selected_category)
+        st.session_state.used_players = st.session_state.get('used_players', set())
+        st.session_state.used_players.add(question)
         st.session_state.awaiting_input = True
         st.session_state.selected_answer = None
 
