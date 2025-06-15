@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import random
-import time
 
 @st.cache_data
 def load_data():
@@ -53,19 +52,6 @@ def get_question(df, category):
     random.shuffle(options)
     return question, options, correct_answer
 
-st.markdown("""
-    <style>
-    div.stButton > button {
-        background-color: #FF7F00 !important;
-        color: white !important;
-    }
-    div.stButton > button:hover {
-        background-color: #FF7F00 !important;
-        color: white !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 quiz_options = {
     'Team': 'Team',
     'Age': 'Age',
@@ -77,128 +63,42 @@ quiz_options = {
 
 if 'score' not in st.session_state:
     st.session_state.update({
-        'score': 0, 'q_number': 1, 'last_answered': False,
-        'correct': None, 'missed': [], 'category_index': 0,
-        'review_mode': False, 'quiz_complete': False,
-        'awaiting_input': True, 'selected_answer': None,
-        'current_level': 1, 'used_players': set(), 'show_intro': False
+        'score': 0,
+        'q_number': 1,
+        'correct': None,
+        'missed': [],
+        'awaiting_input': True,
+        'used_players': set(),
+        'current_q': None
     })
 
 df = load_data()
-level_configs = {
-    1: {'team_questions': 7, 'include_height': False},
-    2: {'team_questions': 5, 'include_height': False},
-    3: {'team_questions': 4, 'include_height': True},
-    4: {'team_questions': 3, 'include_height': True},
-    5: {'team_questions': 1, 'include_height': True},
-}
-level_names = ['The Rook', 'No Slump Sophomore', 'Cap Space Problem', 'No All Star Break for You!', 'Knoxville Forever...']
 
 if not df.empty:
-    if st.session_state.q_number > 10:
-        if st.session_state.score == 10:
-            if st.session_state.current_level < 5:
-                st.session_state.current_level += 1
-                st.session_state.show_intro = True
-                st.session_state.update({
-                    'q_number': 1,
-                    'score': 0,
-                    'missed': [],
-                    'current_q': None,
-                    'awaiting_input': True,
-                    'review_mode': False
-                })
-                st.rerun()
-            else:
-                st.success("🎉 You've mastered all 5 levels of the WNBA Flashcard Trainer!")
-                time.sleep(2)
-                st.session_state.quiz_complete = True
-                st.session_state.review_mode = True
-                st.stop()
-        else:
-            # FIXED: Reset to level 1 when score is not perfect
-            st.session_state.current_level = 1
-            st.session_state.quiz_complete = True
-            st.session_state.review_mode = True
-            st.session_state.current_q = None
-            st.session_state.awaiting_input = False
-            st.subheader("🏁 Quiz Complete!")
-            st.write(f"Your final score: {st.session_state.score} out of 10")
-            st.markdown("**You need a perfect score to advance! Starting over at Level 1.**")
-            st.markdown("**Click 'Review Missed Answers' to see your mistakes, then try again!**")
-            
-            # Add a restart button
-            if st.button("🔄 Start Over at Level 1"):
-                st.session_state.update({
-                    'score': 0,
-                    'q_number': 1,
-                    'missed': [],
-                    'current_q': None,
-                    'awaiting_input': True,
-                    'review_mode': False,
-                    'quiz_complete': False,
-                    'current_level': 1,
-                    'used_players': set(),
-                    'show_intro': False
-                })
-                st.rerun()
-            st.stop()
-
-    if st.button("Review Missed Answers"):
-        st.session_state.review_mode = True
-
-    if st.session_state.review_mode:
-        st.subheader("📝 Review Missed Questions")
-        for missed in st.session_state.missed:
-            st.markdown(f"**{missed['question']}**")
-            st.markdown(f"Your answer: ❌ {missed['your_answer']}")
-            st.markdown(f"Correct answer: ✅ {missed['correct_answer']}")
-        
-        # Add a button to go back to the main screen
-        if st.button("🔙 Back to Quiz"):
-            st.session_state.review_mode = False
-            st.rerun()
-        st.stop()
-
-    if st.session_state.show_intro:
-        level_intros = [
-            "You're getting noticed. Let's see if you belong.",
-            "No slump allowed. You've been here before.",
-            "Money's tight, pressure's high. Let's work.",
-            "No time off. Bring your A-game every night.",
-            "Legacy time. Can you go all the way?"
-        ]
-        st.title(f"🔥 Level {st.session_state.current_level}: {level_names[st.session_state.current_level - 1]} 🔥")
-        st.markdown(level_intros[st.session_state.current_level - 1])
-        
-        if st.button("🚀 Start Level"):
+    if st.session_state.q_number > 20:
+        st.subheader("🏁 Quiz Complete!")
+        st.write(f"Your final score: {st.session_state.score} out of 20")
+        if st.button("🔄 Restart Quiz"):
             st.session_state.update({
-                'q_number': 1,
                 'score': 0,
+                'q_number': 1,
+                'correct': None,
                 'missed': [],
                 'awaiting_input': True,
-                'show_intro': False
+                'used_players': set(),
+                'current_q': None
             })
             st.rerun()
         st.stop()
 
     if 'current_q' not in st.session_state or not st.session_state.awaiting_input:
-        level_cfg = level_configs[st.session_state.current_level]
-        random_pool = [k for k in quiz_options if k != 'Team']
-        if st.session_state.current_level < 4:
-            random_pool = [k for k in random_pool if k != 'Height']
+        team_questions = ['Team'] * 10
+        other_keys = [k for k in quiz_options if k != 'Team']
+        other_questions = random.choices(other_keys, k=10)
+        question_categories = team_questions + other_questions
+        random.shuffle(question_categories)
+        selected_category = question_categories[(st.session_state.q_number - 1) % len(question_categories)]
 
-        sample_size = min(10 - level_cfg['team_questions'], len(random_pool))
-        if st.session_state.current_level == 1:
-            question_categories = ['Team'] * 6 + ['College/Country'] * 4
-        elif st.session_state.current_level == 4:
-            question_categories = ['Team'] * 3 + ['College/Country', 'WNBA Experience', 'Draft Pick', 'Age', 'Height', 'Draft Pick', 'Age']
-        elif st.session_state.current_level == 5:
-            question_categories = ['Team'] + ['College/Country', 'WNBA Experience', 'Draft Pick', 'Age', 'Height', 'College/Country', 'Draft Pick', 'Age', 'Height']
-        else:
-            question_categories = ['Team'] * level_cfg['team_questions'] + random.sample(random_pool, sample_size)
-
-        selected_category = question_categories[st.session_state.q_number - 1]
         filtered_df = df[~df['Player'].isin(st.session_state.used_players)]
         if filtered_df.empty:
             st.session_state.used_players = set()
@@ -210,62 +110,39 @@ if not df.empty:
         st.session_state.awaiting_input = True
         st.session_state.selected_answer = None
 
-    if 'current_q' not in st.session_state or st.session_state.current_q is None:
-        st.stop()
+    if st.session_state.current_q:
+        question, choices, correct_answer, category_display = st.session_state.current_q
 
-    question, choices, correct_answer, category_display = st.session_state.current_q
+        st.title("🏀 WNBA Flashcard Trainer")
+        st.subheader(f"Question {st.session_state.q_number} of 20")
 
-    st.markdown(f"""
-    <div style='display: flex; align-items: center; flex-direction: column; align-items: flex-start;'>
-        <div style='display: flex; align-items: center;'>
-            <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png' width='50' style='margin-right: 15px;'>
-            <h1 style='margin: 0;'>WNBA Flashcard Trainer</h1>
-        </div>
-        <div style='background-color: #f0f0f0; padding: 4px 12px; border-radius: 4px; margin-top: 5px;'>
-            <strong style='font-size: 1.4em;'>Level {st.session_state.current_level}: {level_names[st.session_state.current_level - 1]}</strong>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown(f"<h3 style='margin-top: 0;'>Question {st.session_state.q_number} of 10:</h3>", unsafe_allow_html=True)
-    st.progress(st.session_state.q_number - 1, text=f"Progress: Question {st.session_state.q_number} of 10")
+        if category_display == 'Team':
+            st.write(f"{question} plays for what team?")
+        elif category_display == 'Draft Pick':
+            st.write(f"Who was selected with the draft pick: **{question}**?")
+        else:
+            st.write(f"What is the **{'WNBA experience' if category_display == 'WNBA Experience' else category_display.lower()}** of **{question}**?")
 
-    if category_display == 'Team':
-        st.write(f"{question} plays for what team?")
-    elif category_display == 'Draft Pick':
-        st.write(f"Who was selected with the draft pick: **{question}**?")
-    else:
-        st.write(f"What is the **{'WNBA experience' if category_display == 'WNBA Experience' else category_display.lower()}** of **{question}**?")
+        for option in choices:
+            if st.session_state.awaiting_input:
+                if st.button(str(option), key=option):
+                    st.session_state.awaiting_input = False
+                    st.session_state.selected_answer = option
+                    if option == correct_answer:
+                        st.success("✅ Correct!")
+                        st.session_state.score += 1
+                    else:
+                        st.error(f"❌ Incorrect. The correct answer was: {correct_answer}")
+                        st.session_state.missed.append({
+                            'question': f"{('Who was selected with the draft pick: ' + question) if category_display == 'Draft Pick' else f'What is the {category_display.lower()} of {question}?'}",
+                            'your_answer': option,
+                            'correct_answer': correct_answer
+                        })
+                    st.session_state.q_number += 1
+                    st.session_state.current_q = None
+                    st.rerun()
 
-    for option in choices:
-        if st.session_state.awaiting_input:
-            if st.button(str(option), key=option):
-                st.session_state.awaiting_input = False
-                st.session_state.selected_answer = option
-                if option == correct_answer:
-                    st.session_state.last_feedback = "correct"
-                    st.session_state.score += 1
-                else:
-                    st.session_state.last_feedback = "incorrect"
-                    st.session_state.missed.append({
-                        'question': f"{('Who was selected with the draft pick: ' + question) if category_display == 'Draft Pick' else f'What is the {category_display.lower()} of {question}?'}",
-                        'your_answer': option,
-                        'correct_answer': correct_answer
-                    })
-                st.session_state.q_number += 1
-                st.session_state.feedback_mode = True
-                st.rerun()
-
-    if st.session_state.get("feedback_mode"):
-        if st.session_state.last_feedback == "correct":
-            st.success("✅ Correct!")
-        elif st.session_state.last_feedback == "incorrect":
-            st.error(f"❌ Incorrect. The correct answer was: {correct_answer}")
-        if st.button("Next Question"):
-            st.session_state.feedback_mode = False
-            del st.session_state.last_feedback
-            st.rerun()
-
-    st.markdown(f"**Current Score:** {st.session_state.score} / {min(st.session_state.q_number - 1, 10)}")
+        st.markdown(f"**Current Score:** {st.session_state.score} / {min(st.session_state.q_number - 1, 20)}")
 else:
     st.warning("⚠️ No data found! Please check the Google Sheet link.")
     st.stop()
