@@ -6,8 +6,6 @@ import random
 def load_data():
     try:
         df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSo78o_XcjeBYWvYnDBaSolSgf6JAGvBCBSNipn9iLe7KsZkfLI3XCGbVb90oT0wsD57K6h7lR1H5wo/pub?output=csv')
-        st.write("✅ Data loaded. Columns:", df.columns.tolist())
-        st.write(df.head())
         df = df[['Player', 'Team', 'Age', 'Ht', 'Exp', 'College', 'Pos', 'Draft Pick']].dropna().drop_duplicates()
         return df
     except Exception as e:
@@ -103,8 +101,7 @@ if not df.empty:
             st.session_state.question_categories = question_categories
 
         selected_category = st.session_state.question_categories[st.session_state.q_number - 1]
-        selected_category = question_categories[(st.session_state.q_number - 1) % len(question_categories)]
-
+        
         filtered_df = df[~df['Player'].isin(st.session_state.used_players)]
         if filtered_df.empty:
             st.session_state.used_players = set()
