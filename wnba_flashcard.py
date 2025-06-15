@@ -57,7 +57,7 @@ quiz_options = {
     'Team': 'Team',
     'Age': 'Age',
     'Height': 'Ht',
-    'WNBA Experience': 'Exp',
+    'Exp': 'Exp',
     'College/Country': 'College',
     'Draft Pick': 'Draft Pick'
 }
@@ -127,7 +127,7 @@ if not df.empty:
         elif category_display == 'Draft Pick':
             st.write(f"Who was selected with the draft pick: **{question}**?")
         else:
-            st.write(f"What is the **{'WNBA experience' if category_display == 'WNBA Experience' else category_display.lower()}** of **{question}**?")
+            st.write(f"What is the **{'WNBA experience' if category_display == 'Exp' else category_display.lower()}** of **{question}**?")
 
         for option in choices:
             if st.session_state.awaiting_input:
