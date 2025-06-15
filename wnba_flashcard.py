@@ -81,6 +81,7 @@ if not df.empty:
         st.write(f"Your final score: {st.session_state.score} out of 20")
         if st.button("🔄 Restart Quiz"):
             st.session_state.update({
+                'question_categories': None,
                 'score': 0,
                 'q_number': 1,
                 'correct': None,
