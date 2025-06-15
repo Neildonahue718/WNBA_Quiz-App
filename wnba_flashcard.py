@@ -94,11 +94,15 @@ if not df.empty:
         st.stop()
 
     if 'current_q' not in st.session_state or not st.session_state.awaiting_input:
-        team_questions = ['Team'] * 10
-        other_keys = [k for k in quiz_options if k != 'Team']
-        other_questions = random.choices(other_keys, k=10)
-        question_categories = team_questions + other_questions
-        random.shuffle(question_categories)
+        if 'question_categories' not in st.session_state:
+            team_questions = ['Team'] * 10
+            other_keys = [k for k in quiz_options if k != 'Team']
+            other_questions = random.choices(other_keys, k=10)
+            question_categories = team_questions + other_questions
+            random.shuffle(question_categories)
+            st.session_state.question_categories = question_categories
+
+        selected_category = st.session_state.question_categories[st.session_state.q_number - 1]
         selected_category = question_categories[(st.session_state.q_number - 1) % len(question_categories)]
 
         filtered_df = df[~df['Player'].isin(st.session_state.used_players)]
