@@ -63,13 +63,14 @@ quiz_options = {
 
 if 'score' not in st.session_state:
     st.session_state.update({
-        'score': 0,
-        'q_number': 1,
-        'correct': None,
-        'missed': [],
-        'awaiting_input': True,
-        'used_players': set(),
-        'current_q': None
+                'score': 0,
+                'q_number': 1,
+                'correct': None,
+                'missed': [],
+                'awaiting_input': True,
+                'used_players': set(),
+                'current_q': None,
+                'question_categories': None
     })
 
 df = load_data()
