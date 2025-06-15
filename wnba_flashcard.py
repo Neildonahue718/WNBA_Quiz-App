@@ -91,7 +91,7 @@ if not df.empty:
                 'current_q': None
             })
             st.session_state.feedback_displayed = True
-                    st.stop()
+            st.stop()
         st.stop()
 
     if st.session_state.current_q is None or not st.session_state.awaiting_input:
