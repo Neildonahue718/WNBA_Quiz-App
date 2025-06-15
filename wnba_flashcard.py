@@ -6,6 +6,8 @@ import random
 def load_data():
     try:
         df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSo78o_XcjeBYWvYnDBaSolSgf6JAGvBCBSNipn9iLe7KsZkfLI3XCGbVb90oT0wsD57K6h7lR1H5wo/pub?output=csv')
+        st.write("✅ Data loaded. Columns:", df.columns.tolist())
+        st.write(df.head())
         df = df[['Player', 'Team', 'Age', 'Ht', 'Exp', 'College', 'Pos', 'Draft Pick']].dropna().drop_duplicates()
         return df
     except Exception as e:
