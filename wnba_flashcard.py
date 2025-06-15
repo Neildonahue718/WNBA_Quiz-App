@@ -90,7 +90,8 @@ if not df.empty:
                 'used_players': set(),
                 'current_q': None
             })
-            st.rerun()
+            st.session_state.feedback_displayed = True
+                    st.stop()
         st.stop()
 
     if st.session_state.current_q is None or not st.session_state.awaiting_input:
@@ -127,6 +128,15 @@ if not df.empty:
             st.write(f"Who was selected with the draft pick: **{question}**?")
         else:
             st.write(f"What is the **{'WNBA experience' if category_display == 'Exp' else category_display.lower()}** of **{question}**?")
+
+        st.markdown("""
+    <style>
+    div.stButton > button:hover {
+        background-color: #007bff !important;
+        color: white !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
         for option in choices:
             if st.session_state.awaiting_input:
