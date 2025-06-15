@@ -94,7 +94,7 @@ if not df.empty:
         st.stop()
 
     if 'current_q' not in st.session_state or not st.session_state.awaiting_input:
-        if 'question_categories' not in st.session_state:
+        if st.session_state.question_categories is None:
             team_questions = ['Team'] * 10
             other_keys = [k for k in quiz_options if k != 'Team']
             other_questions = random.choices(other_keys, k=10)
