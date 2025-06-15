@@ -93,7 +93,7 @@ if not df.empty:
             st.rerun()
         st.stop()
 
-    if 'current_q' not in st.session_state or not st.session_state.awaiting_input:
+    if st.session_state.current_q is None or not st.session_state.awaiting_input:
         if st.session_state.question_categories is None:
             team_questions = ['Team'] * 10
             other_keys = [k for k in quiz_options if k != 'Team']
@@ -115,7 +115,7 @@ if not df.empty:
         st.session_state.awaiting_input = True
         st.session_state.selected_answer = None
 
-    if st.session_state.current_q:
+    if st.session_state.current_q is not None:
         question, choices, correct_answer, category_display = st.session_state.current_q
 
         st.title("🏀 WNBA Flashcard Trainer")
