@@ -130,14 +130,15 @@ if not df.empty:
 
         for option in choices:
             if st.session_state.awaiting_input:
-                if st.button(str(option), key=option):
+                button_clicked = st.button(str(option), key=option)
+                if button_clicked:
                     st.session_state.awaiting_input = False
                     st.session_state.selected_answer = option
                     if option == correct_answer:
-                        st.success("✅ Correct!")
+                        st.markdown("<div style='background-color:#d4edda;padding:10px;border-radius:5px;color:#155724;'>✅ Correct!</div>", unsafe_allow_html=True)
                         st.session_state.score += 1
                     else:
-                        st.error(f"❌ Incorrect. The correct answer was: {correct_answer}")
+                        st.markdown(f"<div style='background-color:#f8d7da;padding:10px;border-radius:5px;color:#721c24;'>❌ Incorrect. The correct answer was: {correct_answer}</div>", unsafe_allow_html=True)
                         st.session_state.missed.append({
                             'question': f"{('Who was selected with the draft pick: ' + question) if category_display == 'Draft Pick' else f'What is the {category_display.lower()} of {question}?'}",
                             'your_answer': option,
